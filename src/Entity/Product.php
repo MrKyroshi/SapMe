@@ -31,6 +31,16 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     private ?Category $category = null;
 
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    private ?SubCategory $SubCategory = null;
+
+    #[ORM\ManyToOne(inversedBy: 'title')]
+    private ?wishList $wishList = null;
+
+
+
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -47,6 +57,7 @@ class Product
 
         return $this;
     }
+
 
     public function getPrice(): ?float
     {
@@ -95,4 +106,32 @@ class Product
 
         return $this;
     }
+
+    public function getSubCategory(): ?SubCategory
+    {
+        return $this->SubCategory;
+    }
+
+    public function setSubCategory(?SubCategory $SubCategory): self
+    {
+        $this->SubCategory = $SubCategory;
+
+        return $this;
+    }
+
+    public function getWishList(): ?wishList
+    {
+        return $this->wishList;
+    }
+
+    public function setWishList(?wishList $wishList): self
+    {
+        $this->wishList = $wishList;
+
+        return $this;
+    }
+
+
+
+
 }

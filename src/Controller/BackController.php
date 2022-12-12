@@ -4,11 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\SubCategory;
 use App\Form\CategoryType;
 use App\Form\EditProductType;
 use App\Form\ProductType;
+use App\Form\SubCategoryType;
 use App\Repository\CategoryRepository;
 use App\Repository\ProductRepository;
+use App\Repository\SubCategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -173,5 +176,65 @@ class BackController extends AbstractController
                return $this->redirectToRoute('category');
            }
 
+          #[Route('/ajoutSubCategorie', name: 'ajoutSubCategorie')]
+              public function ajoutSubCategorie(Request $request,EntityManagerInterface $manager): Response
+              {
+                  $subCategorie= new SubCategory();
+                  $form = $this->createForm(SubCategoryType::class,$subCategorie);
+                  $form->handleRequest($request);
+                  if ($form->isSubmitted() && $form->isValid())
+                  {
+                      $manager->persist($subCategorie);
+                      $manager->flush();
+                      $this->addFlash('success','SubCatégorie créée');
+                      return $this->redirectToRoute('GestionSubCategorie');
+                  }
+
+                  return $this->render('back/ajoutSubCategorie.html.twig', [
+                      'form'=>$form->createView()
+
+                  ]);
+              }
+
+                #[Route('/editSubCategorie/{id}', name: 'editSubCategorie')]
+                    public function editSubCategorie(SubCategoryRepository $subCategoryRepository,EntityManagerInterface $manager ,Request $request ,$id): Response
+                    {
+                        $SubCategories=$subCategoryRepository->find($id);
+                        $form= $this->createForm(SubCategoryType::class,$SubCategories);
+                        $form->handleRequest($request);
+                        if ($form->isSubmitted() && $form->isValid())
+                        {
+                            $manager->persist($SubCategories);
+                            $manager->flush();
+                            $this->addFlash('success','Modifiéée SubCategorie !!!');
+                            return $this->redirectToRoute('GestionSubCategorie');
+                        }
+
+                        return $this->render('back/editSubCategorie.html.twig', [
+                            'form'=>$form->createView()
+
+                        ]);
+                    }
+
+                       #[Route('/GestionSubCategorie', name: 'GestionSubCategorie')]
+                           public function GestionSubCategorie(SubCategoryRepository $subCategoryRepository): Response
+                           {
+                               $SubCategories= $subCategoryRepository->findAll();
+                               return $this->render('back/GestionSubCategorie.html.twig', [
+                                   'Subcategories'=> $SubCategories
+
+                               ]);
+                           }
+
+                              #[Route('/deleteSubCategorie/{id}', name: 'deleteSubCategorie')]
+                                  public function deleteSubCategorie(SubCategoryRepository $subCategoryRepository,EntityManagerInterface $manager,$id): Response
+                                  {
+                                      $subCategorie=$subCategoryRepository->find($id);
+
+                                      $manager->remove($subCategorie);
+                                      $manager->flush();
+                                      $this->addFlash('success','Suppriméée SubCategorie !!! ');
+                                      return $this->redirectToRoute('GestionSubCategorie');
+                                  }
 
 }//fermeture de controller
